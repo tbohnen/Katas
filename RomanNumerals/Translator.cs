@@ -8,61 +8,78 @@ namespace RomanNumerals
     class Translator
     {
 
-        private readonly Dictionary<string, int> _numeralDivisionList = new Dictionary<string, int>();
-        private int _numberToConvert = -1;
+        private readonly List<NumeralEntry> _numeralDivisionList = new List<NumeralEntry>();
+        private int _numberToConvert;
+        private NumeralEntry _previouslyUsedNumeralEntry;
+        private string _convertedNumeralResult = "";
 
         public Translator()
         {
-            SetupNumeralDivisionQueue();
+            SetupNumeralDivisionList();
         }
 
-        private void SetupNumeralDivisionQueue()
+        private void SetupNumeralDivisionList()
         {
-            _numeralDivisionList.Add("M", 1000);
-            _numeralDivisionList.Add("D", 500);
-            _numeralDivisionList.Add("C", 100);
-            _numeralDivisionList.Add("L", 50);
-            _numeralDivisionList.Add("X", 10);
-            _numeralDivisionList.Add("I", 1);
+            _numeralDivisionList.Add(new NumeralEntry("M", 1000));
+            _numeralDivisionList.Add(new NumeralEntry("D", 500));
+            _numeralDivisionList.Add(new NumeralEntry("C", 100));
+            _numeralDivisionList.Add(new NumeralEntry("L", 50));
+            _numeralDivisionList.Add(new NumeralEntry("X", 10));
+            _numeralDivisionList.Add(new NumeralEntry("V", 5));
+            _numeralDivisionList.Add(new NumeralEntry("I", 1));
         }
 
         public string Convert(int numberToConvert)
         {
             _numberToConvert = numberToConvert;
 
-            var convertedNumeralResult = "";
-
-            while (_numeralDivisionList.Count > 0 && _numberToConvert != 0)
+            while (_numeralDivisionList.Count > 0 && CurrentNumberToConvert() != 0)
             {
-                var nextRomanNumeral = ConvertNextRomanNumeral();
-                convertedNumeralResult = string.Concat(convertedNumeralResult, nextRomanNumeral);
+                var nextRomanNumeral = UseNextRomanNumberAndReturnIfNumeralUsed();
+                if (nextRomanNumeral)
+                {
+                    _previouslyUsedNumeralEntry = CurrentNumeralEntry();
+                }
+                CurrentNumeralEntry().Completed = true;
             }
 
-            return convertedNumeralResult;
+            return _convertedNumeralResult;
         }
 
-        private string ConvertNextRomanNumeral()
+        private bool UseNextRomanNumberAndReturnIfNumeralUsed()
         {
-            var nextDivision = _numeralDivisionList.OrderByDescending(n => n.Value).First();
-            int numberToTranslate = _numberToConvert / nextDivision.Value;
+            bool worked = false;
 
-            var convertedResult = GetRomanNumber(numberToTranslate, nextDivision.Key);
-
-            _numberToConvert = _numberToConvert % nextDivision.Value;
-            _numeralDivisionList.Remove(nextDivision.Key);
-
-            return convertedResult;
-        }
-
-        private static string GetRomanNumber(int numberToTranslate, string numeral)
-        {
-            string convertedNumeral = "";
+            int numberToTranslate = CurrentNumberToConvert() / CurrentNumeralEntry().UpperBound;
 
             for (int i = 1; i <= numberToTranslate; i++)
             {
-                convertedNumeral = string.Concat(convertedNumeral, numeral);
+                _convertedNumeralResult = string.Concat(_convertedNumeralResult, CurrentNumeralEntry().RomanNumeral);
+                worked = true;
             }
-            return convertedNumeral;
+
+            return worked;
+        }
+
+        private NumeralEntry CurrentNumeralEntry()
+        {
+            return _numeralDivisionList
+                            .Where(n => !n.Completed)
+                            .OrderByDescending(n => n.UpperBound).FirstOrDefault();
+        }
+
+        private int CurrentNumberToConvert()
+        {
+            var previousNumeralEntryIndex = _numeralDivisionList.IndexOf(_previouslyUsedNumeralEntry);
+
+            if (previousNumeralEntryIndex < 0)
+            {
+                return _numberToConvert;
+            }
+
+            var previousNumeralEntry = _numeralDivisionList[previousNumeralEntryIndex];
+
+            return _numberToConvert % previousNumeralEntry.UpperBound;
         }
     }
 }
