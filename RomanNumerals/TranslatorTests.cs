@@ -16,6 +16,8 @@ namespace RomanNumerals
         [TestCase(2000, "MM")]
         [TestCase(2500, "MMD")]
         [TestCase(2600, "MMDC")]
+        [TestCase(2750, "MMDCCL")]
+        [TestCase(2950, "MMCML")]
         public void Translator_InstantiateTranslator(int numberToConvert, string expected)
         {
             var translator = new Translator();

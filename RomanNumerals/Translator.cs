@@ -26,27 +26,27 @@ namespace RomanNumerals
             _numeralDivisionList.Add("I", 1);
         }
 
-
         public string Convert(int numberToConvert)
         {
             _numberToConvert = numberToConvert;
 
-            var convertedResult = "";
+            var convertedNumeralResult = "";
 
             while (_numeralDivisionList.Count > 0 && _numberToConvert != 0)
             {
-                convertedResult = string.Concat(convertedResult, GetNextRomanNumeral());
+                var nextRomanNumeral = ConvertNextRomanNumeral();
+                convertedNumeralResult = string.Concat(convertedNumeralResult, nextRomanNumeral);
             }
 
-            return convertedResult;
+            return convertedNumeralResult;
         }
 
-        private string GetNextRomanNumeral()
+        private string ConvertNextRomanNumeral()
         {
             var nextDivision = _numeralDivisionList.OrderByDescending(n => n.Value).First();
-            int result = _numberToConvert / nextDivision.Value;
+            int numberToTranslate = _numberToConvert / nextDivision.Value;
 
-            var convertedResult = GetRomanNumber(result, nextDivision.Key);
+            var convertedResult = GetRomanNumber(numberToTranslate, nextDivision.Key);
 
             _numberToConvert = _numberToConvert % nextDivision.Value;
             _numeralDivisionList.Remove(nextDivision.Key);
@@ -54,16 +54,15 @@ namespace RomanNumerals
             return convertedResult;
         }
 
-
-        private static string GetRomanNumber(int thousandResult, string numeral)
+        private static string GetRomanNumber(int numberToTranslate, string numeral)
         {
-            string convertedResult = "";
+            string convertedNumeral = "";
 
-            for (int i = 1; i <= thousandResult; i++)
+            for (int i = 1; i <= numberToTranslate; i++)
             {
-                convertedResult = string.Concat(convertedResult, numeral);
+                convertedNumeral = string.Concat(convertedNumeral, numeral);
             }
-            return convertedResult;
+            return convertedNumeral;
         }
     }
 }
