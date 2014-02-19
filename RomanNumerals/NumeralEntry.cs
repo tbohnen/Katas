@@ -7,15 +7,17 @@ namespace RomanNumerals
 {
     class NumeralEntry
     {
-        public NumeralEntry(string _romanNumeral, int _upperBound)
+        public NumeralEntry(string romanNumeral, int upperBound, int highBound)
         {
-            RomanNumeral = _romanNumeral;
-            UpperBound = _upperBound;
+            RomanNumeral = romanNumeral;
+            UpperBound = upperBound;
             Completed = false;
+            HighBound = highBound;
         }
 
         public string RomanNumeral { get; set; }
         public int UpperBound { get; set; }
+        public int HighBound { get; set; }
         public bool Completed { get; set; }
 
     }
