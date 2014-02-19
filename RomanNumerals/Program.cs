@@ -10,9 +10,6 @@ namespace RomanNumerals
     {
         static void Main(string[] args)
         {
-
-            Translator t = new Translator();
-            string result = t.Convert(2950);
         }
     }
 }

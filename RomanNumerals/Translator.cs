@@ -7,7 +7,6 @@ namespace RomanNumerals
 {
     class Translator
     {
-
         private readonly List<NumeralEntry> _numeralDivisionList = new List<NumeralEntry>();
         private int _numberToConvert;
         private NumeralEntry _previouslyUsedNumeralEntry;
@@ -20,13 +19,13 @@ namespace RomanNumerals
 
         private void SetupNumeralDivisionList()
         {
-            _numeralDivisionList.Add(new NumeralEntry("M", 1000,900));
-            _numeralDivisionList.Add(new NumeralEntry("D", 500,500));
-            _numeralDivisionList.Add(new NumeralEntry("C", 100,90));
-            _numeralDivisionList.Add(new NumeralEntry("L", 50,50));
-            _numeralDivisionList.Add(new NumeralEntry("X", 10,9));
-            _numeralDivisionList.Add(new NumeralEntry("V", 5,5));
-            _numeralDivisionList.Add(new NumeralEntry("I", 1,1));
+            _numeralDivisionList.Add(new NumeralEntry("M", 1000,900,false));
+            _numeralDivisionList.Add(new NumeralEntry("D", 500,400,true));
+            _numeralDivisionList.Add(new NumeralEntry("C", 100,90,false));
+            _numeralDivisionList.Add(new NumeralEntry("L", 50,40,true));
+            _numeralDivisionList.Add(new NumeralEntry("X", 10,9,false));
+            _numeralDivisionList.Add(new NumeralEntry("V", 5,4,true));
+            _numeralDivisionList.Add(new NumeralEntry("I", 1,1,false));
         }
 
         public string Convert(int numberToConvert)
@@ -59,16 +58,23 @@ namespace RomanNumerals
         private NumeralEntry UseUpperBoundIfApplicableOrReturnNull(bool nextRomanNumeral)
         {
             NumeralEntry lowerBoundNumeralEntry = null;
+            NumeralEntry currentNumeralEntry = CurrentNumeralEntry();
+
             int currentNumber = CurrentNumberToConvert();
             if (nextRomanNumeral)
                 currentNumber = currentNumber % CurrentNumeralEntry().UpperBound;
 
-            int numberToTranslate = currentNumber / (CurrentNumeralEntry().HighBound);
+            int numberToTranslate = currentNumber / currentNumeralEntry.HighBound;
             if (numberToTranslate > 0 && CurrentNumeralEntry().UpperBound > currentNumber)
             {
-                int lowerBoundNumeralIndex = _numeralDivisionList.IndexOf(CurrentNumeralEntry()) + 2;
+                int lowerBoundNumeralIndex = -1;
+                if (!currentNumeralEntry.MiddleRangeNumeral)
+                    lowerBoundNumeralIndex  = _numeralDivisionList.IndexOf(currentNumeralEntry) + 2;
+                else
+                    lowerBoundNumeralIndex = _numeralDivisionList.IndexOf(currentNumeralEntry) + 1;
+
                 lowerBoundNumeralEntry = _numeralDivisionList[lowerBoundNumeralIndex];
-                _convertedNumeralResult = string.Concat(_convertedNumeralResult, lowerBoundNumeralEntry.RomanNumeral, CurrentNumeralEntry().RomanNumeral);
+                _convertedNumeralResult = string.Concat(_convertedNumeralResult, lowerBoundNumeralEntry.RomanNumeral, currentNumeralEntry.RomanNumeral);
             }
 
             return lowerBoundNumeralEntry;

@@ -22,6 +22,7 @@ namespace RomanNumerals
         [TestCase(2950, "MMCML")]
         [TestCase(2953, "MMCMLIII")]
         [TestCase(953, "CMLIII")]
+        [TestCase(954, "CMLIV")]
         public void Translator_InstantiateTranslator(int numberToConvert, string expected)
         {
             var translator = new Translator();
