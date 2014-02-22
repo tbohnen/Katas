@@ -8,7 +8,7 @@ namespace RomanNumerals
     class IntegerToRomanNumeralConverter
     {
         private readonly List<NumeralEntry> _numerals = new NumeralList();
-        private string _convertedNumeralResult = "";
+        private string _convertedResult = "";
         private int _remainingIntegerToConvert;
 
         public string Convert(int integerToConvert)
@@ -17,16 +17,16 @@ namespace RomanNumerals
 
             EnumerateThroughNumeralsToConvertAllIntegers();
                 
-            return _convertedNumeralResult;
+            return _convertedResult;
         }
 
         private void EnumerateThroughNumeralsToConvertAllIntegers()
         {
-            foreach (var currentNumeralEntry in _numerals)
+            foreach (var currentRomanNumeral in _numerals)
             {
-                UseRomanNumeralToConvertRemaindingInteger(currentNumeralEntry);
+                UseRomanNumeralToConvertRemaindingInteger(currentRomanNumeral);
                 
-                CalculateRemainderOfIntegerToConvertAfterCurrentConversion(currentNumeralEntry);
+                CalculateRemainderOfIntegerToConvertAfterCurrentConversion(currentRomanNumeral);
 
                 if (_remainingIntegerToConvert == 0)
                     break;
@@ -42,14 +42,14 @@ namespace RomanNumerals
             {
                 for (int i = 1; i <= integerToConvertToNumeral; i++)
                 {
-                    _convertedNumeralResult = string.Concat(_convertedNumeralResult, romanNumeralToConvert.RomanNumeral);
+                    _convertedResult = string.Concat(_convertedResult, romanNumeralToConvert.RomanNumeral);
                 }
             }
         }
 
-        private void CalculateRemainderOfIntegerToConvertAfterCurrentConversion(NumeralEntry currentNumeral)
+        private void CalculateRemainderOfIntegerToConvertAfterCurrentConversion(NumeralEntry currentRomanNumeral)
         {
-            _remainingIntegerToConvert = _remainingIntegerToConvert % currentNumeral.UpperBound;
+            _remainingIntegerToConvert = _remainingIntegerToConvert % currentRomanNumeral.UpperBound;
         }
 
     }
