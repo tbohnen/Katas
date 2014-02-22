@@ -23,9 +23,13 @@ namespace RomanNumerals
         [TestCase(2953, "MMCMLIII")]
         [TestCase(953, "CMLIII")]
         [TestCase(954, "CMLIV")]
+        [TestCase(2445, "MMCDXLV")]
+        [TestCase(2444, "MMCDXLIV")]
+        [TestCase(44, "XLIV")]
+        [TestCase(28, "XXVIII")]
         public void Translator_InstantiateTranslator(int numberToConvert, string expected)
         {
-            var translator = new Translator();
+            var translator = new IntegerToRomanNumeralConverter();
 
             var convertedNumeral = translator.Convert(numberToConvert);
 

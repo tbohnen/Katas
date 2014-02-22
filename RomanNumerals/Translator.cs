@@ -5,117 +5,52 @@ using System.Text;
 
 namespace RomanNumerals
 {
-    class Translator
+    class IntegerToRomanNumeralConverter
     {
-        private readonly List<NumeralEntry> _numeralDivisionList = new List<NumeralEntry>();
-        private int _numberToConvert;
-        private NumeralEntry _previouslyUsedNumeralEntry;
+        private readonly List<NumeralEntry> _numerals = new NumeralList();
         private string _convertedNumeralResult = "";
+        private int _remainingIntegerToConvert;
 
-        public Translator()
+        public string Convert(int integerToConvert)
         {
-            SetupNumeralDivisionList();
-        }
+            _remainingIntegerToConvert = integerToConvert;
 
-        private void SetupNumeralDivisionList()
-        {
-            _numeralDivisionList.Add(new NumeralEntry("M", 1000,900,false));
-            _numeralDivisionList.Add(new NumeralEntry("D", 500,400,true));
-            _numeralDivisionList.Add(new NumeralEntry("C", 100,90,false));
-            _numeralDivisionList.Add(new NumeralEntry("L", 50,40,true));
-            _numeralDivisionList.Add(new NumeralEntry("X", 10,9,false));
-            _numeralDivisionList.Add(new NumeralEntry("V", 5,4,true));
-            _numeralDivisionList.Add(new NumeralEntry("I", 1,1,false));
-        }
-
-        public string Convert(int numberToConvert)
-        {
-            _numberToConvert = numberToConvert;
-
-            while (_numeralDivisionList.Count > 0 && CurrentNumberToConvert() != 0)
-            {
-                NumeralEntry lowerBoundNumeralEntry = null;
-
-                var currentNumeralEntryUsed = UseNextRomanNumberAndReturnIfNumeralUsed();
-                lowerBoundNumeralEntry = UseUpperBoundIfApplicableOrReturnNull(currentNumeralEntryUsed);
-
-                if (lowerBoundNumeralEntry != null)
-                {
-                    _previouslyUsedNumeralEntry = lowerBoundNumeralEntry;
-                    lowerBoundNumeralEntry.Completed = true;
-                }
-                else if (currentNumeralEntryUsed)
-                {
-                    _previouslyUsedNumeralEntry = CurrentNumeralEntry();
-                }
-
-                CurrentNumeralEntry().Completed = true;
-            }
-
+            EnumerateThroughNumeralsToConvertAllIntegers();
+                
             return _convertedNumeralResult;
         }
 
-        private NumeralEntry UseUpperBoundIfApplicableOrReturnNull(bool nextRomanNumeral)
+        private void EnumerateThroughNumeralsToConvertAllIntegers()
         {
-            NumeralEntry lowerBoundNumeralEntry = null;
-            NumeralEntry currentNumeralEntry = CurrentNumeralEntry();
-
-            int currentNumber = CurrentNumberToConvert();
-            if (nextRomanNumeral)
-                currentNumber = currentNumber % CurrentNumeralEntry().UpperBound;
-
-            int numberToTranslate = currentNumber / currentNumeralEntry.HighBound;
-            if (numberToTranslate > 0 && CurrentNumeralEntry().UpperBound > currentNumber)
+            foreach (var currentNumeralEntry in _numerals)
             {
-                int lowerBoundNumeralIndex = -1;
-                if (!currentNumeralEntry.MiddleRangeNumeral)
-                    lowerBoundNumeralIndex  = _numeralDivisionList.IndexOf(currentNumeralEntry) + 2;
-                else
-                    lowerBoundNumeralIndex = _numeralDivisionList.IndexOf(currentNumeralEntry) + 1;
+                UseRomanNumeralToConvertRemaindingInteger(currentNumeralEntry);
+                
+                CalculateRemainderOfIntegerToConvertAfterCurrentConversion(currentNumeralEntry);
 
-                lowerBoundNumeralEntry = _numeralDivisionList[lowerBoundNumeralIndex];
-                _convertedNumeralResult = string.Concat(_convertedNumeralResult, lowerBoundNumeralEntry.RomanNumeral, currentNumeralEntry.RomanNumeral);
+                if (_remainingIntegerToConvert == 0)
+                    break;
+
             }
-
-            return lowerBoundNumeralEntry;
         }
 
-        private bool UseNextRomanNumberAndReturnIfNumeralUsed()
+        private void UseRomanNumeralToConvertRemaindingInteger(NumeralEntry romanNumeralToConvert)
         {
-            bool worked = false;
-            var currentNumeralEntry = CurrentNumeralEntry();
-            int numberToTranslate = CurrentNumberToConvert() / currentNumeralEntry.UpperBound;
+            int integerToConvertToNumeral = _remainingIntegerToConvert / romanNumeralToConvert.UpperBound;
 
-            if (numberToTranslate > 0)
+            if (integerToConvertToNumeral > 0)
             {
-                for (int i = 1; i <= numberToTranslate; i++)
+                for (int i = 1; i <= integerToConvertToNumeral; i++)
                 {
-                    _convertedNumeralResult = string.Concat(_convertedNumeralResult, currentNumeralEntry.RomanNumeral);
-                    worked = true;
+                    _convertedNumeralResult = string.Concat(_convertedNumeralResult, romanNumeralToConvert.RomanNumeral);
                 }
             }
-            return worked;
         }
 
-        private NumeralEntry CurrentNumeralEntry()
+        private void CalculateRemainderOfIntegerToConvertAfterCurrentConversion(NumeralEntry currentNumeral)
         {
-            return _numeralDivisionList
-                            .Where(n => !n.Completed)
-                            .OrderByDescending(n => n.UpperBound).FirstOrDefault();
+            _remainingIntegerToConvert = _remainingIntegerToConvert % currentNumeral.UpperBound;
         }
 
-        private int CurrentNumberToConvert()
-        {
-            var previousNumeralEntryIndex = _numeralDivisionList.IndexOf(_previouslyUsedNumeralEntry);
-
-            if (previousNumeralEntryIndex < 0)
-            {
-                return _numberToConvert;
-            }
-
-            var previousNumeralEntry = _numeralDivisionList[previousNumeralEntryIndex];
-
-            return _numberToConvert % previousNumeralEntry.UpperBound;
-        }
     }
 }
