@@ -7,7 +7,7 @@ namespace RomanNumerals
 {
     class IntegerToRomanNumeralConverter
     {
-        private readonly List<NumeralEntry> _numerals = new NumeralList();
+        private readonly List<RomanNumeral> _numerals = new NumeralList();
         private string _convertedResult = "";
         private int _remainingIntegerToConvert;
 
@@ -22,35 +22,26 @@ namespace RomanNumerals
 
         private void EnumerateThroughNumeralsToConvertAllIntegers()
         {
-            foreach (var currentRomanNumeral in _numerals)
+            _numerals.ForEach(currentRomanNumeral => 
             {
                 UseRomanNumeralToConvertRemaindingInteger(currentRomanNumeral);
-                
+
                 CalculateRemainderOfIntegerToConvertAfterCurrentConversion(currentRomanNumeral);
-
-                if (_remainingIntegerToConvert == 0)
-                    break;
-
-            }
+            });
+            
         }
 
-        private void UseRomanNumeralToConvertRemaindingInteger(NumeralEntry romanNumeralToConvert)
+        private void UseRomanNumeralToConvertRemaindingInteger(RomanNumeral romanNumeralToConvert)
         {
-            int integerToConvertToNumeral = _remainingIntegerToConvert / romanNumeralToConvert.UpperBound;
+            int integerToConvertToNumeral = _remainingIntegerToConvert / romanNumeralToConvert.IntegerEquivalent;
 
-            if (integerToConvertToNumeral > 0)
-            {
-                for (int i = 1; i <= integerToConvertToNumeral; i++)
-                {
-                    _convertedResult = string.Concat(_convertedResult, romanNumeralToConvert.RomanNumeral);
-                }
-            }
+            for (int i = 0; i < integerToConvertToNumeral; i++)
+                _convertedResult = string.Concat(_convertedResult, romanNumeralToConvert.Numeral);
         }
 
-        private void CalculateRemainderOfIntegerToConvertAfterCurrentConversion(NumeralEntry currentRomanNumeral)
+        private void CalculateRemainderOfIntegerToConvertAfterCurrentConversion(RomanNumeral currentRomanNumeral)
         {
-            _remainingIntegerToConvert = _remainingIntegerToConvert % currentRomanNumeral.UpperBound;
+            _remainingIntegerToConvert = _remainingIntegerToConvert % currentRomanNumeral.IntegerEquivalent;
         }
-
     }
 }

@@ -5,16 +5,16 @@ using System.Text;
 
 namespace RomanNumerals
 {
-    class NumeralEntry
+    class RomanNumeral
     {
-        public NumeralEntry(string romanNumeral, int upperBound)
+        public RomanNumeral(string numeral, int integerEquivalent)
         {
-            RomanNumeral = romanNumeral;
-            UpperBound = upperBound;
+            Numeral = numeral;
+            IntegerEquivalent = integerEquivalent;
         }
 
-        public string RomanNumeral { get; set; }
-        public int UpperBound { get; set; }
+        public string Numeral { get; set; }
+        public int IntegerEquivalent { get; set; }
 
     }
 }
