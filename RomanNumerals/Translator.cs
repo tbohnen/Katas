@@ -5,64 +5,43 @@ using System.Text;
 
 namespace RomanNumerals
 {
-    class Translator
+    class IntegerToRomanNumeralConverter
     {
+        private readonly List<RomanNumeral> _numerals = new NumeralList();
+        private string _convertedResult = "";
+        private int _remainingIntegerToConvert;
 
-        private readonly Dictionary<string, int> _numeralDivisionList = new Dictionary<string, int>();
-        private int _numberToConvert = -1;
-
-        public Translator()
+        public string Convert(int integerToConvert)
         {
-            SetupNumeralDivisionQueue();
+            _remainingIntegerToConvert = integerToConvert;
+
+            EnumerateThroughNumeralsToConvertAllIntegers();
+                
+            return _convertedResult;
         }
 
-        private void SetupNumeralDivisionQueue()
+        private void EnumerateThroughNumeralsToConvertAllIntegers()
         {
-            _numeralDivisionList.Add("M", 1000);
-            _numeralDivisionList.Add("D", 500);
-            _numeralDivisionList.Add("C", 100);
-            _numeralDivisionList.Add("L", 50);
-            _numeralDivisionList.Add("X", 10);
-            _numeralDivisionList.Add("I", 1);
-        }
-
-        public string Convert(int numberToConvert)
-        {
-            _numberToConvert = numberToConvert;
-
-            var convertedNumeralResult = "";
-
-            while (_numeralDivisionList.Count > 0 && _numberToConvert != 0)
+            _numerals.ForEach(currentRomanNumeral => 
             {
-                var nextRomanNumeral = ConvertNextRomanNumeral();
-                convertedNumeralResult = string.Concat(convertedNumeralResult, nextRomanNumeral);
-            }
+                UseRomanNumeralToConvertRemaindingInteger(currentRomanNumeral);
 
-            return convertedNumeralResult;
+                CalculateRemainderOfIntegerToConvertAfterCurrentConversion(currentRomanNumeral);
+            });
+            
         }
 
-        private string ConvertNextRomanNumeral()
+        private void UseRomanNumeralToConvertRemaindingInteger(RomanNumeral romanNumeralToConvert)
         {
-            var nextDivision = _numeralDivisionList.OrderByDescending(n => n.Value).First();
-            int numberToTranslate = _numberToConvert / nextDivision.Value;
+            int integerToConvertToNumeral = _remainingIntegerToConvert / romanNumeralToConvert.IntegerEquivalent;
 
-            var convertedResult = GetRomanNumber(numberToTranslate, nextDivision.Key);
-
-            _numberToConvert = _numberToConvert % nextDivision.Value;
-            _numeralDivisionList.Remove(nextDivision.Key);
-
-            return convertedResult;
+            for (int i = 0; i < integerToConvertToNumeral; i++)
+                _convertedResult = string.Concat(_convertedResult, romanNumeralToConvert.Numeral);
         }
 
-        private static string GetRomanNumber(int numberToTranslate, string numeral)
+        private void CalculateRemainderOfIntegerToConvertAfterCurrentConversion(RomanNumeral currentRomanNumeral)
         {
-            string convertedNumeral = "";
-
-            for (int i = 1; i <= numberToTranslate; i++)
-            {
-                convertedNumeral = string.Concat(convertedNumeral, numeral);
-            }
-            return convertedNumeral;
+            _remainingIntegerToConvert = _remainingIntegerToConvert % currentRomanNumeral.IntegerEquivalent;
         }
     }
 }
