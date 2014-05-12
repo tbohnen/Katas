@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="C:\Users\Theo\Documents\GitHub\Katas\GameOfLife\GameOfLife.Tests\GameOfLife.Tests.csproj" total="4" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2014-05-12" time="18:01:12">
+  <environment nunit-version="2.6.3.13283" clr-version="2.0.50727.6413" os-version="Microsoft Windows NT 6.2.9200.0" platform="Win32NT" cwd="C:\Users\Theo\Documents\GitHub\Katas\GameOfLife\GameOfLife.Tests" machine-name="BIGMAC" user="Theo" user-domain="BIGMAC" />
+  <culture-info current-culture="en-ZA" current-uiculture="en-US" />
+  <test-suite type="Project" name="C:\Users\Theo\Documents\GitHub\Katas\GameOfLife\GameOfLife.Tests\GameOfLife.Tests.csproj" executed="True" result="Success" success="True" time="0.100" asserts="0">
+    <results>
+      <test-suite type="Assembly" name="C:\Users\Theo\Documents\GitHub\Katas\GameOfLife\GameOfLife.Tests\bin\Debug\GameOfLife.Tests.dll" executed="True" result="Success" success="True" time="0.081" asserts="0">
+        <results>
+          <test-suite type="Namespace" name="GameOfLife" executed="True" result="Success" success="True" time="0.080" asserts="0">
+            <results>
+              <test-suite type="Namespace" name="Tests" executed="True" result="Success" success="True" time="0.080" asserts="0">
+                <results>
+                  <test-suite type="TestFixture" name="WorldTests" executed="True" result="Success" success="True" time="0.078" asserts="0">
+                    <results>
+                      <test-case name="GameOfLife.Tests.WorldTests.DefaultStateOfCellIsDead" executed="True" result="Success" success="True" time="0.042" asserts="1" />
+                      <test-case name="GameOfLife.Tests.WorldTests.HasEmptyWorld" executed="True" result="Success" success="True" time="0.009" asserts="1" />
+                      <test-suite type="ParameterizedTest" name="SetCellStateAtLocation" executed="True" result="Success" success="True" time="0.007" asserts="0">
+                        <results>
+                          <test-case name="GameOfLife.Tests.WorldTests.SetCellStateAtLocation(Dead)" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                          <test-case name="GameOfLife.Tests.WorldTests.SetCellStateAtLocation(Alive)" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
