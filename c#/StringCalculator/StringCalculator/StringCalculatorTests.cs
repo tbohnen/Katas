@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using NUnit.Framework;
 
 namespace StringCalculator
@@ -67,6 +68,42 @@ namespace StringCalculator
             Assert.AreEqual(exception.Message, "-1,-2");
         }
 
+        [Test]
+        public void NumbersBiggerThanThousandShouldBeIgnored()
+        {
+            var sum = _stringCalculator.Add("1,2,3,1001,1002,4");
+
+            Assert.AreEqual(10, sum);
+        }
+
+        [Test]
+        public void DelimeterSpecifiedCanBeMoreThanOneCharInLength()
+        {
+            var sum = _stringCalculator.Add("//[|||]\n1|||2|||3");
+
+            Assert.AreEqual(6, sum);
+        }
+
+        [Test]
+        public void AllowMultipleCustomSpecifiedDelimeters()
+        {
+            var sum = _stringCalculator.Add("//[*][%]\n1*2%3");
+
+	    Assert.AreEqual(6, sum);
+
+        }
+
+        [Test]
+        public void AllowMultipleCustomSpecifiedDelimetersWithMultipleChars()
+        {
+            var sum = _stringCalculator.Add("//[**][%]\n1**2%3");
+
+            Assert.AreEqual(6, sum);
+
+        }
+
+
+
     }
 
     public class StringCalculator
@@ -80,7 +117,8 @@ namespace StringCalculator
                 input = RemoveDelimiterSpecifierFromInput(input);
             }
 
-            var numbers = GetNumberArrayFromString(input, delimiters).ToList();
+            var numbers = GetNumberArrayFromStringExcludingNumbersGreaterThan1000(input, delimiters)
+                .ToList();
 
             ThrowExceptionIfThereAreAnyNegativeNumbers(numbers);
 
@@ -98,11 +136,94 @@ namespace StringCalculator
             throw new Exception(exceptionMessage);
         }
 
-        private static IEnumerable<int> GetNumberArrayFromString(string input, List<char> delimiters)
+        private static IEnumerable<int> GetNumberArrayFromStringExcludingNumbersGreaterThan1000(string input, List<string> delimiters)
         {
-            return input
-                .Split(delimiters.ToArray())
-                .Select(c => string.IsNullOrEmpty(c) ? 0 : Convert.ToInt32(c));
+            var numbers = SplitNumbers(input, delimiters)
+                .Select(c => string.IsNullOrEmpty(c) ? 0 : Convert.ToInt32(c))
+                .Where(n => n < 1001);
+            return numbers;
+        }
+
+        private static IEnumerable<string> SplitNumbers(string input, IEnumerable<string> delimiters)
+        {
+
+            var workingString = input;
+            var outputStrings = new List<string>();
+
+            foreach (var delimiter in delimiters)
+            {
+                bool containedDelimiter = false;
+                while (workingString.Contains(delimiter))
+                {
+                    containedDelimiter = true;
+                    int startIndexOfDelimiter = workingString.IndexOf(delimiter);
+
+                    var number = workingString.Substring(0, startIndexOfDelimiter);
+
+                    outputStrings.Add(number);
+
+                    workingString = workingString.Substring(startIndexOfDelimiter + delimiter.Length);
+                }
+
+                if (containedDelimiter)
+                {
+                    outputStrings.Add(workingString);
+                    workingString = ""; 
+                }
+            }
+
+            if (!string.IsNullOrEmpty(workingString))
+                outputStrings.Add(workingString);
+
+            foreach (var delimiter in delimiters)
+            {
+                var listToEnumerate = outputStrings.ToList();
+                foreach (var outputString in listToEnumerate)
+                {
+                    bool containedDelimiter = false;
+
+                    workingString = outputString;
+
+                    while (workingString.Contains(delimiter))
+                    {
+                        containedDelimiter = true;
+
+                        int startIndexOfDelimiter = workingString.IndexOf(delimiter);
+
+                        var number = workingString.Substring(0, startIndexOfDelimiter);
+
+                        outputStrings.Add(number);
+
+                        workingString = workingString.Substring(startIndexOfDelimiter + delimiter.Length);
+                    }
+
+                    if (containedDelimiter)
+                        outputStrings.Add(workingString);
+
+                }
+
+            }
+
+            List<string> outputStringsToRemove = new List<string>();
+
+            foreach (var delimiter in delimiters)
+            {
+                foreach (var outputString in outputStrings)
+                {
+                    if (outputString.Contains(delimiter))
+                    {
+                        outputStringsToRemove.Add(outputString);
+                    }
+                }
+            }
+
+            foreach (var outputStringToRemove in outputStringsToRemove)
+            {
+                outputStrings.Remove(outputStringToRemove);
+            }
+
+
+            return outputStrings.ToArray();
         }
 
         private static bool HasDelimiterSpecifier(string input)
@@ -115,15 +236,22 @@ namespace StringCalculator
             return input.Substring(input.IndexOf('\n') + 1);
         }
 
-        private List<char> GetDelimiters(string input)
+        private List<string> GetDelimiters(string input)
         {
-            var delimiters = new List<Char> { ',', '\n' };
+            var delimiters = new List<string> { ",", "\n" };
 
             if (!HasDelimiterSpecifier(input)) return delimiters;
 
             var delimiter = input.Split('\n')[0].Substring(2);
 
-            delimiters.Add(Convert.ToChar(delimiter));
+            var specialDelimitersInDelimiters = delimiter.Split('[');
+
+            foreach (var specialDelimitersInDelimiter in specialDelimitersInDelimiters)
+            {
+                if (string.IsNullOrEmpty(specialDelimitersInDelimiter)) continue;
+
+                delimiters.Add(specialDelimitersInDelimiter.Replace("]",""));
+            }
 
             return delimiters;
         }
