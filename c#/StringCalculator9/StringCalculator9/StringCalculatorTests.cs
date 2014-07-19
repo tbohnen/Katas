@@ -142,11 +142,11 @@ namespace StringCalculator9
 
             if (HasCustomDelimeter(inputValues))
             {
-                var delimeterString = GetCustomDelimeters(inputValues);
+                var customDelimeters = GetCustomDelimeters(inputValues);
 
-                delimeters.AddRange(delimeterString);
+                delimeters.AddRange(customDelimeters);
 
-                inputValues = RemoveDelimeterString(inputValues);
+                inputValues = RemoveDelimeterSpecifierFromBeginningOfString(inputValues);
             }
 
             var numbers = SplitNumbers(inputValues, delimeters);
@@ -158,7 +158,7 @@ namespace StringCalculator9
             return inputValues.Split(delimeters.ToArray(), StringSplitOptions.RemoveEmptyEntries);
         }
 
-        private static string RemoveDelimeterString(string inputValues)
+        private static string RemoveDelimeterSpecifierFromBeginningOfString(string inputValues)
         {
             return inputValues.Substring(inputValues.IndexOf(NewLine) + 1);
         }

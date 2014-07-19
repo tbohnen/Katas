@@ -86,6 +86,7 @@ namespace StringCalculator12
 
             Assert.AreEqual(4, sum);
         }
+
         [Test]
         public void SupportMultipleCustomDelimeters()
         {
