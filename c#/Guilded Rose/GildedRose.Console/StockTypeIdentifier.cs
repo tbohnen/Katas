@@ -16,5 +16,10 @@ namespace GildedRose.Console
         {
             return item.Name == "Aged Brie";
         }
+
+        public bool IsConjured(Item item)
+        {
+            return item.Name == "Conjured Mana Cake";
+        }
     }
 }

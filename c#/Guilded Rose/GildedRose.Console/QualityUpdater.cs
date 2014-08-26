@@ -3,6 +3,7 @@
     public class QualityUpdater
     {
         private readonly StockTypeIdentifier _stockTypeIdentifier = new StockTypeIdentifier();
+
         private const int MaximumQuality = 50;
 
         public void UpdateQuality(Item item)
@@ -19,16 +20,35 @@
                 return;
             }
 
-            UpdateSulfuras(item);
+            if (_stockTypeIdentifier.IsSulfuras(item))
+            {
+                UpdateSulfuras(item);
+                return;
+            }
 
+            if (_stockTypeIdentifier.IsConjured(item))
+            {
+                UpdateConjured(item);
+                return;
+            }
 
+            UpdateNormalItem(item);
+        }
+
+        private void UpdateConjured(Item item)
+        {
             if (QualityGreaterThanZero(item))
             {
-                if (!(_stockTypeIdentifier.IsSulfuras(item)))
-                {
-                    ReduceQualityByOne(item);
-                }
+                ReduceQualityByOne(item);
+                ReduceQualityByOne(item);
+            }
+        }
 
+        private static void UpdateNormalItem(Item item)
+        {
+            if (QualityGreaterThanZero(item))
+            {
+                ReduceQualityByOne(item);
             }
         }
 
@@ -36,10 +56,7 @@
         {
             if (!SellInGreaterThanZero(item)) return;
 
-            if (_stockTypeIdentifier.IsSulfuras(item))
-            {
-                ReduceQualityByOne(item);
-            }
+            ReduceQualityByOne(item);
         }
 
         private static void UpdateBackstagePass(Item item)
@@ -51,6 +68,7 @@
                 IncreaseQualityByOne(item);
                 return;
             }
+
             IncreaseQualityByTwo(item);
         }
 
@@ -65,11 +83,6 @@
         private static bool SellInLessThan(Item item, int value)
         {
             return item.SellIn < value;
-        }
-
-        private static void SubtractQualityFromQuality(Item item)
-        {
-            item.Quality = item.Quality - item.Quality;
         }
 
         private static void IncreaseQualityByTwo(Item item)
