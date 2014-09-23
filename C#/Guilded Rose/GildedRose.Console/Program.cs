@@ -64,5 +64,6 @@ namespace GildedRose.Console
                 _qualityUpdater.UpdateQuality(item);
             }
         }
+
     }
 }
