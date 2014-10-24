@@ -5,30 +5,30 @@ namespace GameOfLife
 {
     internal class Grid
     {
-        private readonly List<Location> _locations = new List<Location>();
+        private readonly List<Cell> _locations = new List<Cell>();
 
-        public List<Location> LiveLocations()
+        public List<Cell> LiveLocations()
         {
             return _locations.Where(l => l.State == State.Alive).ToList();
         }
 
-        public void AddLiveLocationIfNotExists(Location location)
+        public void AddLiveLocationIfNotExists(Cell cell)
         {
-            var exists = _locations.Exists(l => l.X == location.X && l.Y == location.Y);
+            var exists = _locations.Exists(l => l.X == cell.X && l.Y == cell.Y);
 
             if (!exists)
             {
-                _locations.Add(location);
+                _locations.Add(cell);
             }
 
-            _locations.First(l => l.X == location.X && l.Y == location.Y).State = State.Alive;
+            _locations.First(l => l.X == cell.X && l.Y == cell.Y).State = State.Alive;
         }
 
-        public Dictionary<Location, int> GetAllLocationsWithNeighbourCount()
+        public Dictionary<Cell, int> GetAllCellsWithNeighbourCount()
         {
-            var locationsWithNeighbourCount = new Dictionary<Location, int>();
+            var cellsWithNeighbourCount = new Dictionary<Cell, int>();
             var deadLocations = GetDeadLocationsWithAtLeastOneLiveNeighbour();
-            var allLocations = new List<Location>();
+            var allLocations = new List<Cell>();
 
             allLocations.AddRange(deadLocations);
             allLocations.AddRange(_locations);
@@ -36,15 +36,15 @@ namespace GameOfLife
             foreach (var location in allLocations)
             {
                 var neighbourCount = GetNeighbourCount(location);
-                locationsWithNeighbourCount.Add(location, neighbourCount);
+                cellsWithNeighbourCount.Add(location, neighbourCount);
             }
 
-            return locationsWithNeighbourCount;
+            return cellsWithNeighbourCount;
         }
 
-        private List<Location> GetDeadLocationsWithAtLeastOneLiveNeighbour()
+        private IEnumerable<Cell> GetDeadLocationsWithAtLeastOneLiveNeighbour()
         {
-            var deadNeighbours = new List<Location>();
+            var deadNeighbours = new List<Cell>();
 
             foreach (var location in _locations)
             {
@@ -60,27 +60,27 @@ namespace GameOfLife
             return deadNeighbours;
         }
 
-        private List<Location> AddDeadLocationIfLiveLocationDoesNotExist(List<Location> deadNeighbours, int x, int y)
+        private List<Cell> AddDeadLocationIfLiveLocationDoesNotExist(List<Cell> deadNeighbours, int x, int y)
         {
             if (!_locations.Any(l => l.X == x && l.Y == y) && !deadNeighbours.Any(l => l.X == x && l.Y == y))
             {
-                deadNeighbours.Add(new Location(x, y, State.Dead));
+                deadNeighbours.Add(new Cell(x, y, State.Dead));
             }
             return deadNeighbours;
         }
 
-        private int GetNeighbourCount(Location location)
+        private int GetNeighbourCount(Cell cell)
         {
             int neighbourCount = 0;
 
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, location.X, location.Y + 1);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, location.X + 1, location.Y + 1);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, location.X + 1, location.Y);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, location.X + 1, location.Y - 1);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, location.X, location.Y - 1);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, location.X - 1, location.Y - 1);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, location.X - 1, location.Y);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, location.X - 1, location.Y + 1);
+            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X, cell.Y + 1);
+            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X + 1, cell.Y + 1);
+            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X + 1, cell.Y);
+            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X + 1, cell.Y - 1);
+            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X, cell.Y - 1);
+            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X - 1, cell.Y - 1);
+            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X - 1, cell.Y);
+            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X - 1, cell.Y + 1);
 
             return neighbourCount;
         }
@@ -93,9 +93,9 @@ namespace GameOfLife
             return neighbourCount;
         }
 
-        public void RemoveAtLocation(Location locationToRemove)
+        public void RemoveAtLocation(Cell cellToRemove)
         {
-            var index = _locations.FindIndex(l => l.X == locationToRemove.X && l.Y == locationToRemove.Y);
+            var index = _locations.FindIndex(l => l.X == cellToRemove.X && l.Y == cellToRemove.Y);
             _locations.RemoveAt(index);
         }
     }

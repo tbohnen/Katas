@@ -10,9 +10,14 @@ namespace GameOfLife
         private readonly Grid _grid = new Grid();
         private readonly RuleEgine _ruleEngine = new RuleEgine();
 
-        public void Seed(Location[] locations)
+        public World(IEnumerable<Cell> cells)
         {
-            foreach (var location in locations)
+            Seed(cells);
+        }
+
+        private void Seed(IEnumerable<Cell> cells)
+        {
+            foreach (var location in cells)
             {
                 _grid.AddLiveLocationIfNotExists(location);
             }
@@ -20,7 +25,7 @@ namespace GameOfLife
 
         public void Tick()
         {
-            var locationsWithNeighbourCounts = _grid.GetAllLocationsWithNeighbourCount();
+            var locationsWithNeighbourCounts = _grid.GetAllCellsWithNeighbourCount();
 
             foreach (var locationsWithNeighbourCount in locationsWithNeighbourCounts)
             {
@@ -30,7 +35,7 @@ namespace GameOfLife
             }
         }
 
-        private void UpdateLocationOnGrid(bool alive, KeyValuePair<Location, int> locationsWithNeighbourCount)
+        private void UpdateLocationOnGrid(bool alive, KeyValuePair<Cell, int> locationsWithNeighbourCount)
         {
             if (!alive && locationsWithNeighbourCount.Key.State == State.Alive)
             {
@@ -43,7 +48,7 @@ namespace GameOfLife
             }
         }
 
-        public IEnumerable<Location> LiveLocations()
+        public IEnumerable<Cell> LiveCells()
         {
             return _grid.LiveLocations();
         }

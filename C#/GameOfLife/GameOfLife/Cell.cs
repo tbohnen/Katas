@@ -5,16 +5,16 @@ using System.Text;
 
 namespace GameOfLife
 {
-    class Location
+    class Cell
     {
         private readonly int _x;
         private readonly int _y;
 
-        public Location(int x, int y, State state)
+        public Cell(int x, int y, State state)
         {
             _x = x;
             _y = y;
-            _state = state;
+            State = state;
         }
 
         public int X
@@ -27,19 +27,6 @@ namespace GameOfLife
             get { return _y; }
         }
 
-        private State _state;
-
-        public State State
-        {
-            get { return _state; }
-            set { _state = value; }
-        }
-
-    }
-
-    internal enum State
-    {
-        Dead = 0,
-        Alive = 1
+        public State State { get; set; }
     }
 }
