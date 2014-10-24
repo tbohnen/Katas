@@ -45,9 +45,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameOfLifeTests.cs" />
+    <Compile Include="Grid.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RuleEgine.cs" />
     <Compile Include="World.cs" />
   </ItemGroup>
   <ItemGroup>
