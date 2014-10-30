@@ -2,50 +2,39 @@
 using System.Collections.Generic;
 using System.Resources;
 using System.Text;
+using NUnit.Framework;
 
 namespace GameOfLife
 {
     class World
     {
+        //Is there a better word for Grid (Bring Cell to Life?)
         private readonly Grid _grid = new Grid();
-        private readonly RuleEgine _ruleEngine = new RuleEgine();
+        private readonly GenerationUpdater _generationUpdater;
+
+        public static World EmptyWorld()
+        {
+            return new World(new List<Cell>());
+        }
 
         public World(IEnumerable<Cell> cells)
         {
             Seed(cells);
+            _generationUpdater = new GenerationUpdater();
         }
 
         private void Seed(IEnumerable<Cell> cells)
         {
             foreach (var location in cells)
             {
-                _grid.AddLiveLocationIfNotExists(location);
+                _grid.BringCellToLife(location);
             }
         }
 
         public void Tick()
         {
-            var locationsWithNeighbourCounts = _grid.GetAllCellsWithNeighbourCount();
-
-            foreach (var locationsWithNeighbourCount in locationsWithNeighbourCounts)
-            {
-                var alive = _ruleEngine.IsAlive(locationsWithNeighbourCount.Value, locationsWithNeighbourCount.Key.State);
-
-                UpdateLocationOnGrid(alive, locationsWithNeighbourCount);
-            }
-        }
-
-        private void UpdateLocationOnGrid(bool alive, KeyValuePair<Cell, int> locationsWithNeighbourCount)
-        {
-            if (!alive && locationsWithNeighbourCount.Key.State == State.Alive)
-            {
-                _grid.RemoveAtLocation(locationsWithNeighbourCount.Key);
-            }
-
-            if (alive && locationsWithNeighbourCount.Key.State == State.Dead)
-            {
-                _grid.AddLiveLocationIfNotExists(locationsWithNeighbourCount.Key);
-            }
+            // Maybe be more functional, return a grid
+            _generationUpdater.MoveToNextGeneration(_grid);
         }
 
         public IEnumerable<Cell> LiveCells()

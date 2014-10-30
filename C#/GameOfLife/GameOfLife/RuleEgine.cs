@@ -2,7 +2,7 @@ namespace GameOfLife
 {
     internal class RuleEgine
     {
-        public bool IsAlive(int neighbourCount, State state)
+        public bool Lives(int neighbourCount, State state)
         {
             if (state == State.Alive && neighbourCount < 2) return false;
 

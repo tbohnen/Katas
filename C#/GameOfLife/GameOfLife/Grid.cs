@@ -5,98 +5,65 @@ namespace GameOfLife
 {
     internal class Grid
     {
-        private readonly List<Cell> _locations = new List<Cell>();
+        private readonly List<Cell> _cells = new List<Cell>();
+        private readonly NeighbourCounter _neighbourCounter;
 
-        public List<Cell> LiveLocations()
+        public Grid()
         {
-            return _locations.Where(l => l.State == State.Alive).ToList();
+            _neighbourCounter = new NeighbourCounter();
         }
 
-        public void AddLiveLocationIfNotExists(Cell cell)
+        public IEnumerable<Cell> LiveLocations()
         {
-            var exists = _locations.Exists(l => l.X == cell.X && l.Y == cell.Y);
-
-            if (!exists)
-            {
-                _locations.Add(cell);
-            }
-
-            _locations.First(l => l.X == cell.X && l.Y == cell.Y).State = State.Alive;
+            return _cells.Where(l => l.State == State.Alive).ToList();
         }
 
         public Dictionary<Cell, int> GetAllCellsWithNeighbourCount()
         {
-            var cellsWithNeighbourCount = new Dictionary<Cell, int>();
-            var deadLocations = GetDeadLocationsWithAtLeastOneLiveNeighbour();
-            var allLocations = new List<Cell>();
+            return _neighbourCounter.GetAllCellsWithNeighbourCount(_cells);
+        }
 
-            allLocations.AddRange(deadLocations);
-            allLocations.AddRange(_locations);
-
-            foreach (var location in allLocations)
+        public void ChangeCellState(Cell cell, bool shouldLive)
+        {
+            if (!shouldLive)
             {
-                var neighbourCount = GetNeighbourCount(location);
-                cellsWithNeighbourCount.Add(location, neighbourCount);
+                KillCellIfExists(cell);
             }
 
-            return cellsWithNeighbourCount;
-        }
-
-        private IEnumerable<Cell> GetDeadLocationsWithAtLeastOneLiveNeighbour()
-        {
-            var deadNeighbours = new List<Cell>();
-
-            foreach (var location in _locations)
+            if (shouldLive)
             {
-                deadNeighbours = AddDeadLocationIfLiveLocationDoesNotExist(deadNeighbours, location.X, location.Y + 1);
-                deadNeighbours = AddDeadLocationIfLiveLocationDoesNotExist(deadNeighbours, location.X + 1, location.Y + 1);
-                deadNeighbours = AddDeadLocationIfLiveLocationDoesNotExist(deadNeighbours, location.X + 1, location.Y);
-                deadNeighbours = AddDeadLocationIfLiveLocationDoesNotExist(deadNeighbours, location.X + 1, location.Y - 1);
-                deadNeighbours = AddDeadLocationIfLiveLocationDoesNotExist(deadNeighbours, location.X, location.Y - 1);
-                deadNeighbours = AddDeadLocationIfLiveLocationDoesNotExist(deadNeighbours, location.X - 1, location.Y - 1);
-                deadNeighbours = AddDeadLocationIfLiveLocationDoesNotExist(deadNeighbours, location.X - 1, location.Y);
-                deadNeighbours = AddDeadLocationIfLiveLocationDoesNotExist(deadNeighbours, location.X - 1, location.Y + 1);
+                BringCellToLife(cell);
             }
-            return deadNeighbours;
         }
 
-        private List<Cell> AddDeadLocationIfLiveLocationDoesNotExist(List<Cell> deadNeighbours, int x, int y)
+        public void BringCellToLife(Cell cell)
         {
-            if (!_locations.Any(l => l.X == x && l.Y == y) && !deadNeighbours.Any(l => l.X == x && l.Y == y))
+            var exists = _cells.Exists(l => l.X == cell.X && l.Y == cell.Y);
+
+            if (!exists)
             {
-                deadNeighbours.Add(new Cell(x, y, State.Dead));
+                _cells.Add(cell);
             }
-            return deadNeighbours;
+
+            _cells.First(l => l.X == cell.X && l.Y == cell.Y).State = State.Alive;
         }
 
-        private int GetNeighbourCount(Cell cell)
+        private void KillCellIfExists(Cell cellToKill)
         {
-            int neighbourCount = 0;
+            if (!CellExists(cellToKill)) return;
 
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X, cell.Y + 1);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X + 1, cell.Y + 1);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X + 1, cell.Y);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X + 1, cell.Y - 1);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X, cell.Y - 1);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X - 1, cell.Y - 1);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X - 1, cell.Y);
-            neighbourCount = IncrementNeighbourCountIfNeighbourExistsAtLocation(neighbourCount, cell.X - 1, cell.Y + 1);
-
-            return neighbourCount;
+            KillCell(cellToKill);
         }
 
-        private int IncrementNeighbourCountIfNeighbourExistsAtLocation(int neighbourCount, int neighbourX, int neighbourY)
+        private void KillCell(Cell cellToKill)
         {
-            if (_locations.Any(l => l.X == neighbourX && l.Y == neighbourY))
-                return neighbourCount + 1;
-
-            return neighbourCount;
+            var index = _cells.FindIndex(l => l.X == cellToKill.X && l.Y == cellToKill.Y);
+            _cells.RemoveAt(index);
         }
 
-        public void RemoveAtLocation(Cell cellToRemove)
+        private bool CellExists(Cell cellToKill)
         {
-            var index = _locations.FindIndex(l => l.X == cellToRemove.X && l.Y == cellToRemove.Y);
-            _locations.RemoveAt(index);
+            return _cells.Exists(l => l.X == cellToKill.X && l.Y == cellToKill.Y);
         }
     }
 }

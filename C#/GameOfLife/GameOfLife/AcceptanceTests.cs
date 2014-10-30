@@ -8,18 +8,22 @@ namespace GameOfLife
     [TestFixture]
     public class AcceptanceTests
     {
+        //Get the tests and internals of tests alligned
+        //A starting point might be to change below to reflect either a dead world or a world with no live cells
         [Test]
         public void NoCellsInSeedMeansWorldIsDeadAfterTick()
         {
-            var world = new World(new List<Cell>());
+            var world = World.EmptyWorld();
 
             world.Tick();
 
-            Assert.AreEqual(0,world.LiveCells().Count());
+            Assert.IsFalse(world.LiveCells().Any());
         }
 
         [Test]
         public void SetupWorldWithBlockPatternAndEnsureWorldStillHasBlockPatternAfterwards()
+        //public void WorldWithBlockPatternAfterTickIsSymmetricalBlockPattern()
+        //public void WorldWithBlockPatternAfterTickDoesNotChange()
         {
             var cells = new List<Cell>
             {
@@ -29,11 +33,13 @@ namespace GameOfLife
                 new Cell(1, 0, State.Alive)
             };
 
+            //World.Seed
             var world = new World(cells);
 
             world.Tick();
 
-            Assert.AreEqual(4,world.LiveCells().Count());
+            //you aren't testing the right thing here but rather, doing a lip service to what you actually should be testing
+            Assert.AreEqual(4, world.LiveCells().Count());
         }
 
         [Test]
@@ -52,10 +58,10 @@ namespace GameOfLife
 
 
             var liveCells = world.LiveCells().ToList();
-            AssertCellAlive(liveCells, 1,1);
-            AssertCellAlive(liveCells, 1,0);
-            AssertCellAlive(liveCells, 1,-1);
-
+            AssertCellAlive(liveCells, 1, 1);
+            AssertCellAlive(liveCells, 1, 0);
+            AssertCellAlive(liveCells, 1, -1);
+            //Assert cell count
         }
 
 
@@ -81,10 +87,10 @@ namespace GameOfLife
             AssertCellAlive(world.LiveCells(), 2, 0);
             AssertCellAlive(world.LiveCells(), 2, 1);
             AssertCellAlive(world.LiveCells(), 1, -1);
-
         }
 
         [Test]
+        // Look at better name
         public void GliderPatternWithTwoTicksHasCorrectResult()
         {
             var cells = new List<Cell>
@@ -106,12 +112,11 @@ namespace GameOfLife
             AssertCellAlive(world.LiveCells(), 2, -1);
             AssertCellAlive(world.LiveCells(), 2, 0);
             AssertCellAlive(world.LiveCells(), 2, 1);
-
         }
 
         private void AssertCellAlive(IEnumerable<Cell> liveCells, int x, int y)
         {
-            Assert.AreEqual(State.Alive,liveCells.Single(c => c.X == x && c.Y == y).State);
+            Assert.AreEqual(State.Alive, liveCells.Single(c => c.X == x && c.Y == y).State);
         }
     }
 }
